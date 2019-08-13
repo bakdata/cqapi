@@ -30,7 +30,7 @@ async def post(session, url, json):
 
 
 class ConqueryConnection(object):
-    async def __aenter__(self, ):
+    async def __aenter__(self):
         self._session = ClientSession()
         return self
 

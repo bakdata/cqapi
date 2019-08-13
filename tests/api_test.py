@@ -13,6 +13,7 @@ with open(file_path) as fp:
 
 base_url = endpoint_config['base_url']
 
+# Helpers
 
 def get_expected(url):
     return endpoint_config["get_endpoints"][url]["expected"]
@@ -27,6 +28,7 @@ async def mocked_get(__, url):
 def mocked_backend(mocker):
     mocker.patch('cqapi.api.get', side_effect=mocked_get)
 
+# Tests
 
 @pytest.mark.asyncio
 async def test_cq_connection_init(mock_backend):
@@ -36,6 +38,7 @@ async def test_cq_connection_init(mock_backend):
     """
     async with ConqueryConnection(base_url) as cq:
         assert(isinstance(cq, ConqueryConnection))
+
 
 # todo add these endpoint tests to endpoints.json
 """
