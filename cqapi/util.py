@@ -44,3 +44,12 @@ def dict_to_object(dictionary):
     else:
         object = dictionary
     return object
+
+
+def selects_per_concept(concepts: dict):
+    """
+
+    :param concepts:
+    :return:
+    """
+    return {concept_id: concept.get('selects', []) for (concept_id, concept) in concepts.items()}
