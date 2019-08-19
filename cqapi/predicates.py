@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List
+import json
 
 
 def parse_predicate(dictionary: dict):
@@ -10,6 +11,8 @@ def parse_predicate(dictionary: dict):
         return dict_to_or(dictionary)
     elif type == 'NEGATION':
         return dict_to_negation(dictionary)
+    elif type == 'DATE_RESTRICTION':
+        return dict_to_date_restriction(dictionary)
     elif type == 'CONCEPT':
         return dict_to_concept(dictionary)
     else:
@@ -26,6 +29,10 @@ def dict_to_or(dictionary: dict):
 
 def dict_to_negation(dictionary: dict):
     return NegationPredicate(parse_predicate(dictionary.get("child", None)))
+
+
+def dict_to_date_restriction(dictionary: dict):
+    return DateRestrictionPredicate(dictionary.get("dateRange", None), parse_predicate(dictionary.get("child", None)))
 
 
 def dict_to_concept(dictionary: dict):
@@ -85,7 +92,7 @@ class NegationPredicate(Predicate):
         self.child = child
 
     def __str__(self):
-        return f"NEGATION({str(child)})"
+        return f"NEGATION({str(self.child)})"
 
     def __eq__(self, other):
         return (isinstance(other, self.__class__)
@@ -96,6 +103,25 @@ class NegationPredicate(Predicate):
 
     def _to_execution_format(self):
         return {"type": "NEGATION", "child": self.child._to_execution_format()}
+
+
+class DateRestrictionPredicate(Predicate):
+    def __init__(self, date_range: dict, child: Predicate):
+        self.date_range = date_range
+        self.child = child
+
+    def __str__(self):
+        return f"DATE_RESTRICTION(range: {str(self.date_range)}, {str(self.child)})"
+
+    def __eq__(self, other):
+        return (isinstance(other, self.__class__)
+                and self.__dict__ == other.__dict__)
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def _to_execution_format(self):
+        return {"type": "DATE_RANGE", "dateRange": json.dumps(self.date_range), "child": self.child._to_execution_format()}
 
 
 class Concept(Predicate):
