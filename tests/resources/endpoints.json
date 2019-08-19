@@ -1,5 +1,5 @@
 {
-  "base_url": "http://localhost:9082",
+  "base_url": "http://localhost:9085",
   "get_endpoints": {
     "/api/datasets": {
       "api_method_name": "get_datasets",
@@ -81,22 +81,26 @@
       },
       "expected": [
         {
-          "__class__": "Concept",
-          "__module__": "cqapi.predicates",
           "label": "DEMO_CONCEPT",
-          "ids": ["demo.concept"],
-          "tables": [],
-          "selects": [],
-          "exclude_from_time_aggregation": false
+          "ids": [
+            "demo.concept"
+          ],
+          "children": [
+            "demo.concept.child"
+          ],
+          "matchingEntries": 0,
+          "codeListResolvable": false
         },
         {
-          "__class__": "Concept",
-          "__module__": "cqapi.predicates",
+          "parent": "demo.concept",
           "label": "DEMO_CONCEPT_CHILD",
-          "ids": ["demo.concept.child"],
-          "tables": [],
-          "selects": [],
-          "exclude_from_time_aggregation": false
+          "ids": [
+            "demo.concept.child"
+          ],
+          "description": "DEMO_CONCEPT_CHILD_DESCRIPTION",
+          "children": [],
+          "matchingEntries": 0,
+          "codeListResolvable": false
         }
       ]
     },
@@ -155,19 +159,15 @@
           "own": true,
           "system": false,
           "query": {
-            "__class__": "ConceptQuery",
-            "__module__": "cqapi.concept_query",
+            "type": "CONCEPT_QUERY",
             "root": {
-              "__class__": "AndPredicate",
-              "__module__": "cqapi.predicates",
+              "type": "AND",
               "children": [
                 {
-                  "__class__": "OrPredicate",
-                  "__module__": "cqapi.predicates",
+                  "type": "OR",
                   "children": [
                     {
-                      "__class__": "Concept",
-                      "__module__": "cqapi.predicates",
+                      "type": "CONCEPT",
                       "label": "Heilmittelkosten",
                       "ids": [
                         "demo.heilmittelkosten"
@@ -177,8 +177,7 @@
                           "id": "demo.heilmittelkosten.heilmittel"
                         }
                       ],
-                      "selects": [],
-                      "exclude_from_time_aggregation": false
+                      "excludeFromTimeAggregation": false
                     }
                   ]
                 }
@@ -225,37 +224,14 @@
         "shared": false,
         "own": true,
         "system": false,
-        "query": {
-          "__class__": "ConceptQuery",
-          "__module__": "cqapi.concept_query",
-          "root": {
-            "__class__": "AndPredicate",
-            "__module__": "cqapi.predicates",
-            "children": [
-              {
-                "__class__": "OrPredicate",
-                "__module__": "cqapi.predicates",
-                "children": [
-                  {
-                    "__class__": "Concept",
-                    "__module__": "cqapi.predicates",
-                    "label": "Heilmittelkosten",
-                    "ids": [
-                      "demo.heilmittelkosten"
-                    ],
-                    "tables": [
-                      {
-                        "id": "demo.heilmittelkosten.heilmittel"
-                      }
-                    ],
-                    "selects": [],
-                    "exclude_from_time_aggregation": false
-                  }
-                ]
-              }
-            ]
-          }
-        },
+        "query": {"type": "CONCEPT_QUERY",
+          "root": {"type": "AND",
+            "children": [{"type": "OR",
+              "children": [{"type": "CONCEPT",
+                "label": "Heilmittelkosten",
+                "ids": ["demo.heilmittelkosten"],
+                "tables": [{"id": "demo.heilmittelkosten.heilmittel"}],
+                "excludeFromTimeAggregation": false}]}]}},
         "id": "demo.c74576bd-5f86-496a-aefc-812c46d75a9e",
         "status": "DONE",
         "numberOfResults": 9430,

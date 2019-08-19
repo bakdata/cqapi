@@ -27,6 +27,7 @@ async def mocked_get(__, url):
 @pytest.fixture(name="mock_backend")
 def mocked_backend(mocker):
     mocker.patch('cqapi.api.get', side_effect=mocked_get)
+    mocker.patch('cqapi.api.post', side_effect=mocked_get)
 
 # Tests
 

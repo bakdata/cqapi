@@ -1,8 +1,4 @@
 from aiohttp import ClientSession
-from cqapi.predicates import dict_to_concept
-from cqapi.concept_query import ConceptQuery, dict_to_concept_query
-from cqapi.util import object_to_dict
-import json
 import csv
 
 class CqApiError(BaseException):
@@ -24,8 +20,8 @@ async def get_text(session, url):
         return await response.text()
 
 
-async def post(session, url, json):
-    async with session.post(url, json=json) as response:
+async def post(session, url, data):
+    async with session.post(url, json=data) as response:
         return await response.json()
 
 
@@ -52,29 +48,25 @@ class ConqueryConnection(object):
     async def get_concept(self, dataset, concept_id):
         response_dict = await get(self._session, f"{self._url}/api/datasets/{dataset}/concepts/{concept_id}")
         response_list = [dict(attrs, **{"ids": [c_id]}) for c_id, attrs in response_dict.items()]
-        return [dict_to_concept(d) for d in response_list]
+        return response_list
 
     async def get_stored_queries(self, dataset):
         response_list = await get(self._session, f"{self._url}/api/datasets/{dataset}/stored-queries")
-        for d in response_list:
-            d["query"] = dict_to_concept_query(d["query"])
         return response_list
 
     async def get_stored_query(self, dataset, query_id):
         result = await get(self._session, f"{self._url}/api/datasets/{dataset}/stored-queries/{query_id}")
-        result["query"] = dict_to_concept_query(result["query"])
         return result
 
     async def get_query(self, dataset, query_id):
         result = await get(self._session, f"{self._url}/api/datasets/{dataset}/queries/{query_id}")
-        result["query"] = dict_to_concept_query(result["query"])
-        return result
+        return result["query"]
 
-    async def execute_query(self, dataset, query: ConceptQuery):
-        result = await post(self._session, f"{self._url}/api/datasets/{dataset}/queries", query._to_execution_format())
+    async def execute_query(self, dataset, query):
+        result = await post(self._session, f"{self._url}/api/datasets/{dataset}/queries", query)
         return result["id"]
 
-    async def get_query_results(self, dataset, query_id):
+    async def get_query_result(self, dataset, query_id):
         """ Returns results for given query.
         Blocks until the query is DONE.
 
