@@ -4,11 +4,8 @@
 
 # Single-job pipeline: Run unit tests using pytest
 
-trigger:
-  branches:
-    - master
-  pr:
-    - master
+pr:
+  - master
 
 jobs:
 - job: 'Test'
