@@ -24,4 +24,6 @@ jobs:
   - script: python -m pytest tests/
     displayName: 'Run tests'
   - script: pip install .
-    displayName: 'Check if installable using pip'
+    displayName: 'Check if installable using pip (local)'
+  - script: pip install git+ssh://git@github.com/bakdata/cqapi@master
+    displayName: 'Check if installable using pip (from repo)'
