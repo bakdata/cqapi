@@ -1,0 +1,242 @@
+{
+  "base_url": "http://localhost:9085",
+  "get_endpoints": {
+    "/api/datasets": {
+      "api_method_name": "get_datasets",
+      "api_method_params": [],
+      "cq_result": [
+        {
+          "label": "demo",
+          "id": "demo"
+        }
+      ],
+      "expected": [
+        "demo"
+      ]
+    },
+    "/api/datasets/demo/concepts": {
+      "api_method_name": "get_concepts",
+      "api_method_params": ["demo"],
+      "cq_result": {
+        "concepts": {
+          "demo.icd": {
+            "label": "DEMO_CONCEPT",
+            "active": false,
+            "children": [
+              "demo.child"
+            ],
+            "matchingEntries": 0,
+            "tables": [
+              {
+                "id": "demo.table",
+                "connectorId": "demo.icd.table_connector",
+                "label": "TABLE"
+              }
+            ],
+            "detailsAvailable": true,
+            "codeListResolvable": true
+          }
+        }
+      },
+      "expected": {
+        "demo.icd": {
+          "label": "DEMO_CONCEPT",
+          "active": false,
+          "children": [
+            "demo.child"
+          ],
+          "matchingEntries": 0,
+          "tables": [
+            {
+              "id": "demo.table",
+              "connectorId": "demo.icd.table_connector",
+              "label": "TABLE"
+            }
+          ],
+          "detailsAvailable": true,
+          "codeListResolvable": true
+        }
+      }
+    },
+    "/api/datasets/demo/concepts/demo.concept": {
+      "api_method_name": "get_concept",
+      "api_method_params": ["demo", "demo.concept"],
+      "cq_result": {
+        "demo.concept": {
+          "label": "DEMO_CONCEPT",
+          "children": [
+            "demo.concept.child"
+          ],
+          "matchingEntries": 0,
+          "codeListResolvable": false
+        },
+        "demo.concept.child": {
+          "parent": "demo.concept",
+          "label": "DEMO_CONCEPT_CHILD",
+          "description": "DEMO_CONCEPT_CHILD_DESCRIPTION",
+          "children": [],
+          "matchingEntries": 0,
+          "codeListResolvable": false
+        }
+      },
+      "expected": [
+        {
+          "label": "DEMO_CONCEPT",
+          "ids": [
+            "demo.concept"
+          ],
+          "children": [
+            "demo.concept.child"
+          ],
+          "matchingEntries": 0,
+          "codeListResolvable": false
+        },
+        {
+          "parent": "demo.concept",
+          "label": "DEMO_CONCEPT_CHILD",
+          "ids": [
+            "demo.concept.child"
+          ],
+          "description": "DEMO_CONCEPT_CHILD_DESCRIPTION",
+          "children": [],
+          "matchingEntries": 0,
+          "codeListResolvable": false
+        }
+      ]
+    },
+    "/api/datasets/demo/stored-queries": {
+      "api_method_name": "get_stored_queries",
+      "api_method_params": ["demo"],
+      "cq_result": [
+        {
+          "label": "c8530ed5-11cf-48eb-afcd-4c9e70556ced",
+          "createdAt": "2019-08-05T19:03:03.589695+02:00",
+          "owner": "user.SUPERUSER@SUPERUSER",
+          "ownerName": "SUPERUSER",
+          "shared": false,
+          "own": true,
+          "system": false,
+          "query": {
+            "type": "CONCEPT_QUERY",
+            "root": {
+              "type": "AND",
+              "children": [
+                {
+                  "type": "OR",
+                  "children": [
+                    {
+                      "type": "CONCEPT",
+                      "label": "Heilmittelkosten",
+                      "ids": [
+                        "demo.heilmittelkosten"
+                      ],
+                      "tables": [
+                        {
+                          "id": "demo.heilmittelkosten.heilmittel"
+                        }
+                      ],
+                      "excludeFromTimeAggregation": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          "id": "demo.c74576bd-5f86-496a-aefc-812c46d75a9e",
+          "status": "DONE",
+          "numberOfResults": 9430,
+          "requiredTime": 841,
+          "resultUrl": "http://localhost:9082/api/datasets/demo/result/demo.c74576bd-5f86-496a-aefc-812c46d75a9e.csv"
+        }
+      ],
+      "expected": [
+        {
+          "label": "c8530ed5-11cf-48eb-afcd-4c9e70556ced",
+          "createdAt": "2019-08-05T19:03:03.589695+02:00",
+          "owner": "user.SUPERUSER@SUPERUSER",
+          "ownerName": "SUPERUSER",
+          "shared": false,
+          "own": true,
+          "system": false,
+          "query": {
+            "type": "CONCEPT_QUERY",
+            "root": {
+              "type": "AND",
+              "children": [
+                {
+                  "type": "OR",
+                  "children": [
+                    {
+                      "type": "CONCEPT",
+                      "label": "Heilmittelkosten",
+                      "ids": [
+                        "demo.heilmittelkosten"
+                      ],
+                      "tables": [
+                        {
+                          "id": "demo.heilmittelkosten.heilmittel"
+                        }
+                      ],
+                      "excludeFromTimeAggregation": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          "id": "demo.c74576bd-5f86-496a-aefc-812c46d75a9e",
+          "status": "DONE",
+          "numberOfResults": 9430,
+          "requiredTime": 841,
+          "resultUrl": "http://localhost:9082/api/datasets/demo/result/demo.c74576bd-5f86-496a-aefc-812c46d75a9e.csv"
+        }
+      ]
+    },
+    "/api/datasets/demo/stored-queries/demo.c74576bd-5f86-496a-aefc-812c46d75a9e": {
+      "api_method_name": "get_stored_query",
+      "api_method_params": ["demo", "demo.c74576bd-5f86-496a-aefc-812c46d75a9e"],
+      "cq_result": {
+        "label": "c8530ed5-11cf-48eb-afcd-4c9e70556ced",
+        "createdAt": "2019-08-05T19:03:03.589695+02:00",
+        "owner": "user.SUPERUSER@SUPERUSER",
+        "ownerName": "SUPERUSER",
+        "shared": false,
+        "own": true,
+        "system": false,
+        "query": {"type": "CONCEPT_QUERY",
+          "root": {"type": "AND",
+            "children": [{"type": "OR",
+              "children": [{"type": "CONCEPT",
+                "label": "Heilmittelkosten",
+                "ids": ["demo.heilmittelkosten"],
+                "tables": [{"id": "demo.heilmittelkosten.heilmittel"}],
+                "excludeFromTimeAggregation": false}]}]}},
+        "id": "demo.c74576bd-5f86-496a-aefc-812c46d75a9e",
+        "status": "DONE",
+        "numberOfResults": 9430,
+        "requiredTime": 841
+      },
+      "expected": {
+        "label": "c8530ed5-11cf-48eb-afcd-4c9e70556ced",
+        "createdAt": "2019-08-05T19:03:03.589695+02:00",
+        "owner": "user.SUPERUSER@SUPERUSER",
+        "ownerName": "SUPERUSER",
+        "shared": false,
+        "own": true,
+        "system": false,
+        "query": {"type": "CONCEPT_QUERY",
+          "root": {"type": "AND",
+            "children": [{"type": "OR",
+              "children": [{"type": "CONCEPT",
+                "label": "Heilmittelkosten",
+                "ids": ["demo.heilmittelkosten"],
+                "tables": [{"id": "demo.heilmittelkosten.heilmittel"}],
+                "excludeFromTimeAggregation": false}]}]}},
+        "id": "demo.c74576bd-5f86-496a-aefc-812c46d75a9e",
+        "status": "DONE",
+        "numberOfResults": 9430,
+        "requiredTime": 841
+      }
+    }
+  }
+}
