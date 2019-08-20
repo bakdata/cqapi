@@ -21,6 +21,8 @@ jobs:
     displayName: 'Update pip'
   - script: pip install -r requirements.txt
     displayName: 'Install requirements'
+  - script: pip install pytest-azurepipelines
+    displayName: 'Install azure-specific dependencies'
   - script: python -m pytest tests/
     displayName: 'Run tests'
   - script: pip install .
