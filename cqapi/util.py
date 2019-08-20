@@ -25,7 +25,6 @@ def dict_to_object(dictionary):
     """ Convert dictionary to Python object if dictionary has __class__ and __module__ members.
 
     Can be used with json.loads to deserialize a JSON-encoded object.
-
     :param dictionary: Dictionary to deserialize
     :return: Deserialized object if __class__ and __module__ are present, otherwise the input dictionary.
 
@@ -47,9 +46,22 @@ def dict_to_object(dictionary):
 
 
 def selects_per_concept(concepts: dict):
-    """
+    """ Aggregates a dict of concepts to a dict of available selects per concept.
 
-    :param concepts:
-    :return:
+    Used to declutter the concepts dict returned from a ConqueryConnection.get_concepts('dataset') call.
+
+    Usage example:
+        # lets say you're interested in all available selects (specifically their ids) for a specific concept
+        concepts = await cq.get_concepts('dataset')
+        selects_of_concept_x = selects_per_concept(concepts).get('concept_x')
+        type(selects_of_concept)  # = list, because of the above .get() call on the dictionary
+
+        # selects_of_concept is applicable also to concepts returned by cq.get_concept('dataset', 'specific_concept')
+        concepts = await cq.get_concept('dataset', 'specific_concept')
+        selects_by_concept = selects_per_concept(concepts)
+        type(selects_by_concept)  # = dict
+
+    :param concepts: dict of concepts as returned by ConqueryConnection.get_concept and .get_concepts calls.
+    :return: dict of list of available selects, i.e. a mapping from concept to its available selects.
     """
     return {concept_id: concept.get('selects', []) for (concept_id, concept) in concepts.items()}

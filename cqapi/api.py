@@ -60,7 +60,7 @@ class ConqueryConnection(object):
 
     async def get_query(self, dataset, query_id):
         result = await get(self._session, f"{self._url}/api/datasets/{dataset}/queries/{query_id}")
-        return result["query"]
+        return result
 
     async def execute_query(self, dataset, query):
         result = await post(self._session, f"{self._url}/api/datasets/{dataset}/queries", query)
