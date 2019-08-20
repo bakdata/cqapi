@@ -23,3 +23,5 @@ jobs:
     displayName: 'Install requirements'
   - script: python -m pytest tests/
     displayName: 'Run tests'
+  - script: pip install .
+    displayName: 'Check if installable using pip'

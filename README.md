@@ -2,7 +2,15 @@
 
 ## Installation
 
+To install the latest version of `cqapi` on the `master` branch run:
+```
+pip install git+ssh://git@github.com/bakdata/cqapi@master
+```
 
+Note that you can specify any branch or tag using the `@branch/tag-name` syntax, but the `master` branch is where we
+attempt to keep a working version of this library.
+
+As long as this repository is kept private you will need to use a valid ssh key to install the package from here.
 
 ## Usage
 
@@ -24,7 +32,8 @@ async with ConqueryConnection("http://conquery-base.url:9082") as cq:
 This package can be used just the same in a Jupyter Notebook given that the underlying kernel supports top-level
 `async` calls.
 
-The IPython shell and IPykernel have [added support for top-level `async` since version 7.0](https://blog.jupyter.org/ipython-7-0-async-repl-a35ce050f7f7).
+The IPython shell and IPykernel have
+[added support for top-level `async` since version 7.0](https://blog.jupyter.org/ipython-7-0-async-repl-a35ce050f7f7).
 To make sure you're running the latest versions of both run `pip install ipython ipykernel --upgrade`.
 
 
