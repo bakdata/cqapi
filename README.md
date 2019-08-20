@@ -1,5 +1,7 @@
 # cqapi
 
+[![Build Status](https://dev.azure.com/bakdata/public/_apis/build/status/bakdata.cqapi?branchName=master)](https://dev.azure.com/bakdata/public/_build/latest?definitionId=11&branchName=master)
+
 ## Installation
 
 To install the latest version of `cqapi` on the `master` branch run:
