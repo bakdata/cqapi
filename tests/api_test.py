@@ -66,7 +66,7 @@ tests = build_test_parametrization(tests_json)
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("api_method, method_params, mocked_endpoint, mocked_result, expected_result", tests)
-async def test_get_endpoint_wrappers(api_method, method_params, mocked_endpoint, mocked_result, expected_result):
+async def test_api_methods(api_method, method_params, expected_result):
     async with ConqueryConnection(base_url) as cq:
         method_under_test = getattr(cq, api_method)
         result = await method_under_test(*method_params)
