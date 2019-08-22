@@ -1,23 +1,42 @@
 {
-  "base_url": "http://localhost:9085",
-  "get_endpoints": {
-    "/api/datasets": {
-      "api_method_name": "get_datasets",
-      "api_method_params": [],
-      "cq_result": [
+  "get_datasets": [
+    {
+      "method_params": [],
+      "mocked_endpoint": "/api/datasets",
+      "mocked_result": [
         {
           "label": "demo",
           "id": "demo"
         }
       ],
-      "expected": [
+      "expected_result": [
         "demo"
       ]
     },
-    "/api/datasets/demo/concepts": {
-      "api_method_name": "get_concepts",
-      "api_method_params": ["demo"],
-      "cq_result": {
+    {
+      "method_params": [],
+      "mocked_endpoint": "/api/datasets",
+      "mocked_result": [
+        {
+          "label": "demo",
+          "id": "demo"
+        },
+        {
+          "label": "agens",
+          "id": "agens"
+        }
+      ],
+      "expected_result": [
+        "demo",
+        "agens"
+      ]
+    }
+  ],
+  "get_concepts": [
+    {
+      "method_params": ["demo"],
+      "mocked_endpoint": "/api/datasets/demo/concepts",
+      "mocked_result": {
         "concepts": {
           "demo.icd": {
             "label": "DEMO_CONCEPT",
@@ -38,7 +57,7 @@
           }
         }
       },
-      "expected": {
+      "expected_result": {
         "demo.icd": {
           "label": "DEMO_CONCEPT",
           "active": false,
@@ -57,11 +76,16 @@
           "codeListResolvable": true
         }
       }
-    },
-    "/api/datasets/demo/concepts/demo.concept": {
-      "api_method_name": "get_concept",
-      "api_method_params": ["demo", "demo.concept"],
-      "cq_result": {
+    }
+  ],
+  "get_concept": [
+    {
+      "method_params": [
+        "demo",
+        "demo.concept"
+      ],
+      "mocked_endpoint": "/api/datasets/demo/concepts/demo.concept",
+      "mocked_result": {
         "demo.concept": {
           "label": "DEMO_CONCEPT",
           "children": [
@@ -79,7 +103,7 @@
           "codeListResolvable": false
         }
       },
-      "expected": [
+      "expected_result": [
         {
           "label": "DEMO_CONCEPT",
           "ids": [
@@ -103,11 +127,15 @@
           "codeListResolvable": false
         }
       ]
-    },
-    "/api/datasets/demo/stored-queries": {
-      "api_method_name": "get_stored_queries",
-      "api_method_params": ["demo"],
-      "cq_result": [
+    }
+  ],
+  "get_stored_queries": [
+    {
+      "method_params": [
+        "demo"
+      ],
+      "mocked_endpoint": "/api/datasets/demo/stored-queries",
+      "mocked_result": [
         {
           "label": "c8530ed5-11cf-48eb-afcd-4c9e70556ced",
           "createdAt": "2019-08-05T19:03:03.589695+02:00",
@@ -149,7 +177,7 @@
           "resultUrl": "http://localhost:9082/api/datasets/demo/result/demo.c74576bd-5f86-496a-aefc-812c46d75a9e.csv"
         }
       ],
-      "expected": [
+      "expected_result": [
         {
           "label": "c8530ed5-11cf-48eb-afcd-4c9e70556ced",
           "createdAt": "2019-08-05T19:03:03.589695+02:00",
@@ -191,11 +219,16 @@
           "resultUrl": "http://localhost:9082/api/datasets/demo/result/demo.c74576bd-5f86-496a-aefc-812c46d75a9e.csv"
         }
       ]
-    },
-    "/api/datasets/demo/stored-queries/demo.c74576bd-5f86-496a-aefc-812c46d75a9e": {
-      "api_method_name": "get_stored_query",
-      "api_method_params": ["demo", "demo.c74576bd-5f86-496a-aefc-812c46d75a9e"],
-      "cq_result": {
+    }
+  ],
+  "get_stored_query": [
+    {
+      "method_params": [
+        "demo",
+        "demo.c74576bd-5f86-496a-aefc-812c46d75a9e"
+      ],
+      "mocked_endpoint": "/api/datasets/demo/stored-queries/demo.c74576bd-5f86-496a-aefc-812c46d75a9e",
+      "mocked_result": {
         "label": "c8530ed5-11cf-48eb-afcd-4c9e70556ced",
         "createdAt": "2019-08-05T19:03:03.589695+02:00",
         "owner": "user.SUPERUSER@SUPERUSER",
@@ -216,7 +249,7 @@
         "numberOfResults": 9430,
         "requiredTime": 841
       },
-      "expected": {
+      "expected_result": {
         "label": "c8530ed5-11cf-48eb-afcd-4c9e70556ced",
         "createdAt": "2019-08-05T19:03:03.589695+02:00",
         "owner": "user.SUPERUSER@SUPERUSER",
@@ -238,5 +271,5 @@
         "requiredTime": 841
       }
     }
-  }
+  ]
 }
