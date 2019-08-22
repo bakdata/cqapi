@@ -1,5 +1,4 @@
 from cqapi import ConqueryConnection
-from cqapi.util import dict_to_object
 import pytest
 import json
 import os
