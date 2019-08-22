@@ -40,7 +40,7 @@ def create_get_mock(mocked_backend):
         if url[len(base_url):] in results_by_endpoint.keys():
             return results_by_endpoint.get(url[len(base_url):])
         else:
-            raise Exception(f"Badly configured test queried url {url}, but {base_url + endpoint} was configured.")
+            raise Exception(f"Badly configured test queried url {url}, but endpoints {[base_url + endpoint for endpoint in results_by_endpoint.keys()]} was configured.")
 
     return mocked_get
 
@@ -52,9 +52,20 @@ def create_post_mock(mocked_backend):
         if url[len(base_url):] in results_by_endpoint.keys():
             return results_by_endpoint.get(url[len(base_url):])
         else:
-            raise Exception(f"Badly configured test queried url {url}, but {base_url + endpoint} was configured.")
+            raise Exception(f"Badly configured test queried url {url}, but endpoints {[base_url + endpoint for endpoint in results_by_endpoint.keys()]} was configured.")
 
     return mocked_post
+
+def create_get_text_mock(mocked_backend):
+    results_by_endpoint = {d.get("endpoint"): d.get("result") for d in mocked_backend if d.get("type") == "csv"}
+
+    async def mocked_get_text(__, url):
+        if url[len(base_url):] in results_by_endpoint.keys():
+            return results_by_endpoint.get(url[len(base_url):])
+        else:
+            raise Exception(f"Badly configured test queried url {url}, but endpoints {[base_url + endpoint for endpoint in results_by_endpoint.keys()]} was configured.")
+
+    return mocked_get_text
 
 
 # Backend mock fixture
@@ -64,6 +75,7 @@ def create_post_mock(mocked_backend):
 def mock_backend(mocker, api_method, method_params, mocked_backend, expected_result):
     mocker.patch('cqapi.api.get', side_effect=create_get_mock(mocked_backend))
     mocker.patch('cqapi.api.post', side_effect=create_post_mock(mocked_backend))
+    mocker.patch('cqapi.api.get_text', side_effect=create_get_text_mock(mocked_backend))
 
 # Tests
 

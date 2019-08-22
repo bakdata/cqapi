@@ -340,5 +340,63 @@
       }],
       "expected_result": "demo.demo_id"
     }
+  ],
+  "get_query_result": [
+    {
+      "method_params": [
+        "demo",
+        "demo.demo_id"
+      ],
+      "mocked_backend": [{
+        "endpoint": "/api/datasets/demo/queries/demo.demo_id",
+        "result": {
+          "label": "cb6396e4-5aa5-43c3-96f5-3ce04a409516",
+          "createdAt": "2019-08-22T17:07:35.995861+02:00",
+          "owner": "user.SUPERUSER@SUPERUSER",
+          "ownerName": "SUPERUSER",
+          "shared": false,
+          "own": true,
+          "system": false,
+          "query": {
+            "type": "CONCEPT_QUERY",
+            "root": {
+              "type": "AND",
+              "children": [
+                {
+                  "type": "OR",
+                  "children": [
+                    {
+                      "type": "CONCEPT",
+                      "label": "Heilmittelkosten",
+                      "ids": [
+                        "demo.heilmittelkosten"
+                      ],
+                      "tables": [
+                        {
+                          "id": "demo.heilmittelkosten.heilmittel"
+                        }
+                      ],
+                      "excludeFromTimeAggregation": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          "id": "demo.demo_id",
+          "status": "DONE",
+          "resultUrl": "http://localhost:9082/api/datasets/demo/result/demo_result.csv"
+        }
+      },
+      {
+        "type": "csv",
+        "endpoint": "/api/datasets/demo/result/demo_result.csv",
+        "result": "result;dates\n999999999|VID000011;{2005-01-01/2005-01-01, 2005-04-01/2005-04-01}"
+      }],
+      "expected_result": [
+        ["result", "dates"],
+        ["999999999|VID000011", "{2005-01-01/2005-01-01, 2005-04-01/2005-04-01}"]
+      ]
+    }
   ]
 }
