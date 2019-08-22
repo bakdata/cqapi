@@ -1,78 +1,96 @@
 from cqapi import ConqueryConnection
-from cqapi.util import dict_to_object
 import pytest
 import json
 import os
 
 
 tests_dir = os.path.dirname(os.path.abspath(__file__))
-file_path = os.path.join(tests_dir, 'resources', 'endpoints.json')
-print(file_path)
-with open(file_path) as fp:
-    endpoint_config = json.load(fp, object_hook=dict_to_object)
+file_path = os.path.join(tests_dir, 'resources', 'tests.json')
 
-base_url = endpoint_config['base_url']
+with open(file_path) as fp:
+    tests_json = json.load(fp)
+
+base_url = "http://localhost:9085"
+
 
 # Helpers
 
-def get_expected(url):
-    return endpoint_config["get_endpoints"][url]["expected"]
+
+def build_test_parametrization(tests_json):
+    test_params = []
+    for api_method in tests_json.keys():
+        print(api_method)
+        for test_def in tests_json.get(api_method):
+            assert(dict == type(test_def))
+            print(test_def)
+            test_params.append((
+                api_method,
+                test_def.get("method_params"),
+                test_def.get("mocked_backend"),
+                test_def.get("expected_result")
+            ))
+    print(test_params)
+    return test_params
 
 
-async def mocked_get(__, url):
-    offset = len(base_url)
-    return endpoint_config['get_endpoints'][url[offset:]]["cq_result"]
+def create_get_mock(mocked_backend):
+    results_by_endpoint = {d.get("endpoint"): d.get("result") for d in mocked_backend}
+
+    async def mocked_get(__, url):
+        if url[len(base_url):] in results_by_endpoint.keys():
+            return results_by_endpoint.get(url[len(base_url):])
+        else:
+            raise Exception(f"Badly configured test queried url {url}, but endpoints {[base_url + endpoint for endpoint in results_by_endpoint.keys()]} was configured.")
+
+    return mocked_get
 
 
-@pytest.fixture(name="mock_backend")
-def mocked_backend(mocker):
-    mocker.patch('cqapi.api.get', side_effect=mocked_get)
-    mocker.patch('cqapi.api.post', side_effect=mocked_get)
+def create_post_mock(mocked_backend):
+    results_by_endpoint = {d.get("endpoint"): d.get("result") for d in mocked_backend}
+
+    async def mocked_post(__, url, ___):
+        if url[len(base_url):] in results_by_endpoint.keys():
+            return results_by_endpoint.get(url[len(base_url):])
+        else:
+            raise Exception(f"Badly configured test queried url {url}, but endpoints {[base_url + endpoint for endpoint in results_by_endpoint.keys()]} was configured.")
+
+    return mocked_post
+
+def create_get_text_mock(mocked_backend):
+    results_by_endpoint = {d.get("endpoint"): d.get("result") for d in mocked_backend if d.get("type") == "csv"}
+
+    async def mocked_get_text(__, url):
+        if url[len(base_url):] in results_by_endpoint.keys():
+            return results_by_endpoint.get(url[len(base_url):])
+        else:
+            raise Exception(f"Badly configured test queried url {url}, but endpoints {[base_url + endpoint for endpoint in results_by_endpoint.keys()]} was configured.")
+
+    return mocked_get_text
+
+
+# Backend mock fixture
+
+
+@pytest.fixture(autouse=True)
+def mock_backend(mocker, api_method, method_params, mocked_backend, expected_result):
+    mocker.patch('cqapi.api.get', side_effect=create_get_mock(mocked_backend))
+    mocker.patch('cqapi.api.post', side_effect=create_post_mock(mocked_backend))
+    mocker.patch('cqapi.api.get_text', side_effect=create_get_text_mock(mocked_backend))
 
 # Tests
 
+
+tests = build_test_parametrization(tests_json)
+
+print(tests)
+
+
+@pytest.mark.usefixtures('mock_backend')
 @pytest.mark.asyncio
-async def test_cq_connection_init(mock_backend):
-    """
-    Tests the initialization of a ConqueryConnection.
-    Expects CQ backend to be running on localhost:8080.
-    """
+@pytest.mark.parametrize("api_method, method_params, mocked_backend, expected_result", tests)
+async def test_api_methods(api_method, method_params, expected_result):
     async with ConqueryConnection(base_url) as cq:
-        assert(isinstance(cq, ConqueryConnection))
-
-
-# todo add these endpoint tests to endpoints.json
-"""
-@pytest.mark.asyncio
-async def test_get_running_query(mock_backend):
-    async with ConqueryConnection(base_url) as cq:
-        running_query = await cq.get_query("demo", "demo.running_query")
-        assert get_expected("/api/datasets/demo/queries/demo.running_query") == running_query
-
-@pytest.mark.asyncio
-async def test_get_finished_query(mock_backend):
-    async with ConqueryConnection(base_url) as cq:
-        finished_query = await cq.get_query("demo", "demo.finished_query")
-        assert get_expected("/api/datasets/demo/queries/demo.finished_query") == finished_query
-        
-@pytest.mark.asyncio
-async def test_get_query_result(mock_backend):
-    async with ConqueryConnection(base_url) as cq:
-        finished_query = await cq.get_query_result("demo", "demo.finished_query")
-        assert get_expected("/api/datasets/demo/queries/demo.finished_query") == finished_query
-"""
-
-get_endpoint_tests = [(value["api_method_name"],
-                       value["api_method_params"],
-                       value["expected"])
-                       for key, value in endpoint_config['get_endpoints'].items()]
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize("cq_method, cq_method_params, expected", get_endpoint_tests)
-async def test_get_endpoint_wrappers(mock_backend, cq_method, cq_method_params, expected):
-    async with ConqueryConnection(base_url) as cq:
-        method_under_test = getattr(cq, cq_method)
-        result = await method_under_test(*cq_method_params)
-        assert expected == result
+        method_under_test = getattr(cq, api_method)
+        result = await method_under_test(*method_params)
+        assert expected_result == result
 
