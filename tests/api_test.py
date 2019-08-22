@@ -42,12 +42,22 @@ def create_get_mock(endpoint, result):
     return mocked_get
 
 
+def create_post_mock(endpoint, result):
+    async def mocked_post(__, url, ___):
+        if url == base_url + endpoint:
+            return result
+        else:
+            raise Exception(f"Badly configured test queried url {url}, but {base_url + endpoint} was configured.")
+    return mocked_post
+
+
 # Backend mock fixture
 
 
 @pytest.fixture(autouse=True)
 def mocked_backend(mocker, mocked_endpoint, mocked_result):
     mocker.patch('cqapi.api.get', side_effect=create_get_mock(mocked_endpoint, mocked_result))
+    mocker.patch('cqapi.api.post', side_effect=create_post_mock(mocked_endpoint, mocked_result))
 
 # Tests
 

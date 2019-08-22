@@ -271,5 +271,60 @@
         "requiredTime": 841
       }
     }
+  ],
+  "execute_query": [
+    {
+      "method_params": [
+        "demo",
+        {"type": "CONCEPT_QUERY",
+          "root": {"type": "AND",
+            "children": [{"type": "OR",
+              "children": [{"type": "CONCEPT",
+                "label": "Heilmittelkosten",
+                "ids": ["demo.heilmittelkosten"],
+                "tables": [{"id": "demo.heilmittelkosten.heilmittel"}],
+                "excludeFromTimeAggregation": false}]}]}}
+      ],
+      "mocked_endpoint": "/api/datasets/demo/queries",
+      "mocked_result": {
+        "label": "cb6396e4-5aa5-43c3-96f5-3ce04a409516",
+        "createdAt": "2019-08-22T17:07:35.995861+02:00",
+        "owner": "user.SUPERUSER@SUPERUSER",
+        "ownerName": "SUPERUSER",
+        "shared": false,
+        "own": true,
+        "system": false,
+        "query": {
+          "type": "CONCEPT_QUERY",
+          "root": {
+            "type": "AND",
+            "children": [
+              {
+                "type": "OR",
+                "children": [
+                  {
+                    "type": "CONCEPT",
+                    "label": "Heilmittelkosten",
+                    "ids": [
+                      "demo.heilmittelkosten"
+                    ],
+                    "tables": [
+                      {
+                        "id": "demo.heilmittelkosten.heilmittel"
+                      }
+                    ],
+                    "excludeFromTimeAggregation": false
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "id": "demo.demo_id",
+        "status": "RUNNING",
+        "resultUrl": "http://localhost:9082/api/datasets/demo/result/demo.d56e2c06-31d8-477c-b887-39996d61ae18.csv"
+      },
+      "expected_result": "demo.demo_id"
+    }
   ]
 }
