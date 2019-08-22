@@ -7,7 +7,7 @@ import os
 
 tests_dir = os.path.dirname(os.path.abspath(__file__))
 file_path = os.path.join(tests_dir, 'resources', 'endpoints.json')
-print(file_path)
+
 with open(file_path) as fp:
     endpoint_config = json.load(fp, object_hook=dict_to_object)
 
