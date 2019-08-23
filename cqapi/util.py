@@ -65,3 +65,27 @@ def selects_per_concept(concepts: dict):
     :return: dict of list of available selects, i.e. a mapping from concept to its available selects.
     """
     return {concept_id: concept.get('selects', []) for (concept_id, concept) in concepts.items()}
+
+
+def add_selects_to_concept(query, target_concept_id, selects):
+    if query.get('type') == 'CONCEPT_QUERY':
+        query['root'] = add_selects_to_concept(query.get('root'), target_concept_id, selects)
+        return query
+    elif query.get('type') == 'AND':
+        query['children'] = [add_selects_to_concept(child, target_concept_id, selects) for child in query.get('children')]
+        return query
+    elif query.get('type') == 'OR':
+        query['children'] = [add_selects_to_concept(child, target_concept_id, selects) for child in query.get('children')]
+        return query
+    elif query.get('type') == 'NEGATION':
+        query['child'] = add_selects_to_concept(query.get('child'), target_concept_id, selects)
+        return query
+    elif query.get('type') == 'CONCEPT':
+        if query.get('selects') is not None:
+            query.get('selects').extend(selects)
+            return query
+        else:
+            query['selects'] = selects
+            return query
+    else:
+        raise Exception(f"Unknown type in query: {query.get('type')}")
