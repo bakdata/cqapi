@@ -1,6 +1,7 @@
-from cqapi.util import selects_per_concept, add_selects_to_concept
+from cqapi.util import selects_per_concept, add_selects_to_concept, add_date_restriction_to_concept
 import copy
-
+from datetime import date
+import pytest
 
 concepts = {
     "no_selects": {
@@ -194,7 +195,6 @@ query_with_daterange = {
                     "type": "CONCEPT",
                     "ids": ["target_concept.id"],
                     "label": "target concept",
-                    "selects": ["some_other_select"],
                     "tables": [{"id": "some.table"}],
                     "excludeFromTimeAggregation": False
                 }
@@ -224,3 +224,20 @@ def test_add_selects_to_concept_with_match_with_preexisting():
 def test_add_selects_to_concept_with_date_restriction():
     enriched_query = add_selects_to_concept(query_with_daterange, target_concept_id, [select_id])
     assert select_id in enriched_query['root']['children'][1]['child']['selects']
+
+
+def test_add_date_restriction_to_concept_bad_dateranges():
+    with pytest.raises(ValueError) as e:
+        add_date_restriction_to_concept(query_with_concept, target_concept_id, "199-02-01", date.today())
+    assert "Invalid isoformat string: 199-02-01" == str(e.value)
+    with pytest.raises(ValueError) as e:
+        add_date_restriction_to_concept(query_with_concept, target_concept_id,  date.today(), "199-02-01")
+    assert "Invalid isoformat string: 199-02-01" == str(e.value)
+    with pytest.raises(ValueError) as e:
+        add_date_restriction_to_concept(query_with_concept, target_concept_id,  "2019-02-18", "1992-02-18")
+    assert "Invalid DATE_RESTRICTION: Start-date after end-date" == str(e.value)
+
+
+def test_add_date_restriction_to_concept():
+    enriched_query = add_date_restriction_to_concept(query_with_concept, target_concept_id, "1992-02-18", "2019-08-23")
+    assert query_with_daterange == enriched_query
