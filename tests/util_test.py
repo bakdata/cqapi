@@ -229,10 +229,8 @@ def test_add_selects_to_concept_with_date_restriction():
 def test_add_date_restriction_to_concept_bad_dateranges():
     with pytest.raises(ValueError) as e:
         add_date_restriction_to_concept(query_with_concept, target_concept_id, "199-02-01", date.today())
-    assert "Invalid isoformat string: 199-02-01" == str(e.value)
     with pytest.raises(ValueError) as e:
         add_date_restriction_to_concept(query_with_concept, target_concept_id,  date.today(), "199-02-01")
-    assert "Invalid isoformat string: 199-02-01" == str(e.value)
     with pytest.raises(ValueError) as e:
         add_date_restriction_to_concept(query_with_concept, target_concept_id,  "2019-02-18", "1992-02-18")
     assert "Invalid DATE_RESTRICTION: Start-date after end-date" == str(e.value)
