@@ -56,6 +56,7 @@ def create_post_mock(mocked_backend):
 
     return mocked_post
 
+
 def create_get_text_mock(mocked_backend):
     results_by_endpoint = {d.get("endpoint"): d.get("result") for d in mocked_backend if d.get("type") == "csv"}
 
