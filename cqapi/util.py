@@ -76,19 +76,23 @@ def add_selects_to_concept(query, target_concept_id: str, selects: list):
     :return: the enriched query object - will be the same as the input query iff it does not contain any CONCEPT nodes
         with the target_concept_id.
     """
-    if query.get('type') == 'CONCEPT_QUERY':
+    query_node_type = query.get('type')
+    if query_node_type == 'CONCEPT_QUERY':
         query['root'] = add_selects_to_concept(query.get('root'), target_concept_id, selects)
         return query
-    elif query.get('type') == 'AND':
+    elif query_node_type == 'AND':
         query['children'] = [add_selects_to_concept(child, target_concept_id, selects) for child in query.get('children')]
         return query
-    elif query.get('type') == 'OR':
+    elif query_node_type == 'OR':
         query['children'] = [add_selects_to_concept(child, target_concept_id, selects) for child in query.get('children')]
         return query
-    elif query.get('type') == 'NEGATION':
+    elif query_node_type == 'NEGATION':
         query['child'] = add_selects_to_concept(query.get('child'), target_concept_id, selects)
         return query
-    elif query.get('type') == 'CONCEPT':
+    elif query_node_type == 'DATE_RESTRICTION':
+        query['child'] = add_selects_to_concept(query.get('child'), target_concept_id, selects)
+        return query
+    elif query_node_type == 'CONCEPT':
         if query.get('selects') is not None:
             query.get('selects').extend(selects)
             return query
