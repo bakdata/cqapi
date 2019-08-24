@@ -1,4 +1,5 @@
 from cqapi import ConqueryConnection
+from aiohttp import ClientConnectorError
 import pytest
 import json
 import os
@@ -69,10 +70,21 @@ def create_get_text_mock(mocked_backend):
     return mocked_get_text
 
 
+# ConqueryConnection init test
+
+@pytest.mark.asyncio
+async def test_cq_conn_init():
+    with pytest.raises(ClientConnectorError):
+        async with ConqueryConnection(base_url) as cq:
+            pass
+
+
+
+
 # Backend mock fixture
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture(name='mock_backend')
 def mock_backend(mocker, api_method, method_params, mocked_backend, expected_result):
     mocker.patch('cqapi.api.get', side_effect=create_get_mock(mocked_backend))
     mocker.patch('cqapi.api.post', side_effect=create_post_mock(mocked_backend))
@@ -83,14 +95,12 @@ def mock_backend(mocker, api_method, method_params, mocked_backend, expected_res
 
 tests = build_test_parametrization(tests_json)
 
-print(tests)
-
 
 @pytest.mark.usefixtures('mock_backend')
 @pytest.mark.asyncio
 @pytest.mark.parametrize("api_method, method_params, mocked_backend, expected_result", tests)
 async def test_api_methods(api_method, method_params, expected_result):
-    async with ConqueryConnection(base_url) as cq:
+    async with ConqueryConnection(base_url, check_connection=False) as cq:
         method_under_test = getattr(cq, api_method)
         result = await method_under_test(*method_params)
         assert expected_result == result
