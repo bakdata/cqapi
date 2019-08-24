@@ -30,7 +30,7 @@ class ConqueryConnection(object):
         self._session = ClientSession()
         # try to fail early if conquery is not available at self._url
         if self._check_connection:
-            datasets = await self.get_datasets()
+            await self.get_datasets()
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):

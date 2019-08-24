@@ -79,8 +79,6 @@ async def test_cq_conn_init():
             pass
 
 
-
-
 # Backend mock fixture
 
 
