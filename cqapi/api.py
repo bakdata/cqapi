@@ -1,6 +1,7 @@
 from aiohttp import ClientSession
 import csv
 
+
 class CqApiError(BaseException):
     pass
 
