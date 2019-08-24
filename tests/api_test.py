@@ -69,10 +69,17 @@ def create_get_text_mock(mocked_backend):
     return mocked_get_text
 
 
+# ConqueryConnection init test
+
+# def test_cq_conn_init():
+#     async with
+
+
+
 # Backend mock fixture
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture(name='mock_backend')
 def mock_backend(mocker, api_method, method_params, mocked_backend, expected_result):
     mocker.patch('cqapi.api.get', side_effect=create_get_mock(mocked_backend))
     mocker.patch('cqapi.api.post', side_effect=create_post_mock(mocked_backend))
