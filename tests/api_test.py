@@ -83,8 +83,6 @@ def mock_backend(mocker, api_method, method_params, mocked_backend, expected_res
 
 tests = build_test_parametrization(tests_json)
 
-print(tests)
-
 
 @pytest.mark.usefixtures('mock_backend')
 @pytest.mark.asyncio
