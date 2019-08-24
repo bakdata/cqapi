@@ -28,13 +28,17 @@ async def post(session, url, data):
 class ConqueryConnection(object):
     async def __aenter__(self):
         self._session = ClientSession()
+        # try to fail early if conquery is not available at self._url
+        if self._check_connection:
+            datasets = await self.get_datasets()
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         await self._session.close()
 
-    def __init__(self, url, requests_timout=5):
+    def __init__(self, url, requests_timout=5, check_connection = True):
         self._url = url.strip('/')
+        self._check_connection = check_connection
         self._timeout = requests_timout
 
     async def get_datasets(self):
