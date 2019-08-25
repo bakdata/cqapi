@@ -1,6 +1,7 @@
 from datetime import date
 from copy import deepcopy
 
+
 def object_to_dict(obj):
     """ Convert object to dict with __class__ and __module__ members.
 

@@ -1,5 +1,5 @@
 from cqapi import ConqueryConnection
-from aiohttp import ClientConnectorError
+from cqapi import ConqueryClientConnectionError
 import pytest
 import json
 import os
@@ -74,7 +74,7 @@ def create_get_text_mock(mocked_backend):
 
 @pytest.mark.asyncio
 async def test_cq_conn_init():
-    with pytest.raises(ClientConnectorError):
+    with pytest.raises(ConqueryClientConnectionError):
         async with ConqueryConnection(base_url) as cq:
             pass
 

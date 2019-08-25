@@ -1,4 +1,5 @@
 from aiohttp import ClientSession
+from aiohttp import ClientConnectorError
 import csv
 
 
@@ -6,7 +7,7 @@ class CqApiError(BaseException):
     pass
 
 
-class ConnectionError(CqApiError):
+class ConqueryClientConnectionError(CqApiError):
     def __init__(self, msg):
         self.message = msg
 
@@ -31,7 +32,11 @@ class ConqueryConnection(object):
         self._session = ClientSession()
         # try to fail early if conquery is not available at self._url
         if self._check_connection:
-            await self.get_datasets()
+            try:
+                await self.get_datasets()
+            except ClientConnectorError:
+                error_msg = f"Could not connect to Conquery, are you sure {self._url} is the right address?"
+                raise ConqueryClientConnectionError(error_msg)
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
