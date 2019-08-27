@@ -68,15 +68,15 @@ def selects_per_concept(concepts: dict):
     :param concepts: dict of concepts as returned by ConqueryConnection.get_concept and .get_concepts calls.
     :return: dict of list of available selects, i.e. a mapping from concept to its available selects.
     """
-    return {concept_id: concept.get('selects', []) for (concept_id, concept) in concepts.items()}
+    return {concept_id: [select_dict.get('id') for select_dict in concept.get('selects', [])] for (concept_id, concept) in concepts.items()}
 
 
-def add_selects_to_concept(query, target_concept_id: str, selects: list, ):
+def add_selects_to_concept_query(query, target_concept_id: str, selects: list, ):
     """ Add select-ids to CONCEPT nodes in CONCEPT_QUERYs.
 
     :param query: query to add selects to.
     :param target_concept_id: CONCEPT's id to which the selects should be added.
-    :param selects: list or select ids to be added.
+    :param selects: list of select_ids to be added.
     :return: the enriched query object - will be the same as the input query iff it does not contain any CONCEPT nodes
         with the target_concept_id.
     """
@@ -87,19 +87,19 @@ def add_selects_to_concept(query, target_concept_id: str, selects: list, ):
 
     query_object_node_type = query_object.get('type')
     if query_object_node_type == 'CONCEPT_QUERY':
-        query_object['root'] = add_selects_to_concept(query_object.get('root'), target_concept_id, selects)
+        query_object['root'] = add_selects_to_concept_query(query_object.get('root'), target_concept_id, selects)
         return query_object
     elif query_object_node_type == 'AND':
-        query_object['children'] = [add_selects_to_concept(child, target_concept_id, selects) for child in query_object.get('children')]
+        query_object['children'] = [add_selects_to_concept_query(child, target_concept_id, selects) for child in query_object.get('children')]
         return query_object
     elif query_object_node_type == 'OR':
-        query_object['children'] = [add_selects_to_concept(child, target_concept_id, selects) for child in query_object.get('children')]
+        query_object['children'] = [add_selects_to_concept_query(child, target_concept_id, selects) for child in query_object.get('children')]
         return query_object
     elif query_object_node_type == 'NEGATION':
-        query_object['child'] = add_selects_to_concept(query_object.get('child'), target_concept_id, selects)
+        query_object['child'] = add_selects_to_concept_query(query_object.get('child'), target_concept_id, selects)
         return query_object
     elif query_object_node_type == 'DATE_RESTRICTION':
-        query_object['child'] = add_selects_to_concept(query_object.get('child'), target_concept_id, selects)
+        query_object['child'] = add_selects_to_concept_query(query_object.get('child'), target_concept_id, selects)
         return query_object
     elif query_object_node_type == 'CONCEPT':
         if target_concept_id in query_object.get('ids'):
@@ -115,7 +115,7 @@ def add_selects_to_concept(query, target_concept_id: str, selects: list, ):
         raise Exception(f"Unknown type in query_object: {query_object.get('type')}")
 
 
-def add_date_restriction_to_concept(query, target_concept_id: str, date_start: date, date_end: date):
+def add_date_restriction_to_concept_query(query, target_concept_id: str, date_start: date, date_end: date):
     query_object = deepcopy(query)
 
     if type(date_start) is not date:
@@ -132,19 +132,19 @@ def add_date_restriction_to_concept(query, target_concept_id: str, date_start: d
     query_object_node_type = query_object.get('type')
 
     if query_object_node_type == 'CONCEPT_QUERY':
-        query_object['root'] = add_date_restriction_to_concept(query_object.get('root'), target_concept_id, start, end)
+        query_object['root'] = add_date_restriction_to_concept_query(query_object.get('root'), target_concept_id, start, end)
         return query_object
     elif query_object_node_type == 'AND':
-        query_object['children'] = [add_date_restriction_to_concept(child, target_concept_id, start, end) for child in query_object.get('children')]
+        query_object['children'] = [add_date_restriction_to_concept_query(child, target_concept_id, start, end) for child in query_object.get('children')]
         return query_object
     elif query_object_node_type == 'OR':
-        query_object['children'] = [add_date_restriction_to_concept(child, target_concept_id, start, end) for child in query_object.get('children')]
+        query_object['children'] = [add_date_restriction_to_concept_query(child, target_concept_id, start, end) for child in query_object.get('children')]
         return query_object
     elif query_object_node_type == 'NEGATION':
-        query_object['child'] = add_date_restriction_to_concept(query_object.get('child'), target_concept_id, start, end)
+        query_object['child'] = add_date_restriction_to_concept_query(query_object.get('child'), target_concept_id, start, end)
         return query_object
     elif query_object_node_type == 'DATE_RESTRICTION':
-        query_object['child'] = add_date_restriction_to_concept(query_object.get('child'), target_concept_id, start, end)
+        query_object['child'] = add_date_restriction_to_concept_query(query_object.get('child'), target_concept_id, start, end)
         return query_object
     elif query_object_node_type == 'CONCEPT':
         if target_concept_id in query_object.get('ids'):
@@ -160,3 +160,65 @@ def add_date_restriction_to_concept(query, target_concept_id: str, date_start: d
             return query_object
     else:
         raise Exception(f"Unknown type in query_object: {query_object.get('type')}")
+
+
+def concept_query_from_concept(concept_id, concept_object):
+    """ Create CONCEPT_QUERY with a given CONCEPT as it root node.
+
+    For simple query generation from a single concept.
+
+    :example:
+    >>> # get concept definitions
+    >>> concepts = await cq.get_concepts('some_dataset')
+    >>> concept_object = concepts.get('my_concept')
+    >>> concept_query = util.concept_query_from_concept('my_concept', concept_object)
+    >>> # concept_query is ready for execution
+    >>> cq.execute_query('some_dataset', concept_query)
+    >>> # or can be combined with other utility methods to add selects etc.
+
+    :param concept_id:
+    :param concept_object:
+    :return: a concept query with the given concept as it's sole root node
+    """
+    # todo write tests
+    if 'tables' not in concept_object:
+        raise KeyError("'concept_object' must have key 'tables'")
+    if type(concept_object.get('tables')) != list:
+        raise TypeError("'concept_object.tables' must be of type 'list'")
+    for table in concept_object.get('tables'):
+        if 'connectorId' not in table:
+            raise KeyError("Each table in 'concept_object.table' must have a 'connectorId'")
+
+    query = {
+        'type': 'CONCEPT_QUERY',
+        'root': {
+            'type': 'CONCEPT',
+            'ids': [concept_id],
+            'tables': [{'id': table.get('connectorId')} for table in concept_object.get('tables')]
+        }
+    }
+    return query
+
+
+def add_subquery_to_concept_query(query, subquery):
+    query_object = deepcopy(query)
+    query_object_node_type = query_object.get('type')
+
+    if subquery.get('type') == 'CONCEPT_QUERY':
+        subquery = subquery.get('root')
+
+    if query_object_node_type == 'CONCEPT_QUERY':
+        query_object['root'] = add_subquery_to_concept_query(query_object.get('root'), subquery)
+        return query_object
+    elif query_object_node_type == 'AND':
+        query_object['children'].append(subquery)
+        return query_object
+    else:
+        query = {
+            "type": "AND",
+            "children": [
+                query_object,
+                subquery
+            ]
+        }
+        return query
