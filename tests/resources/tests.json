@@ -261,26 +261,14 @@
           "requiredTime": 841
         }
       }],
-      "expected_result": {
-        "label": "c8530ed5-11cf-48eb-afcd-4c9e70556ced",
-        "createdAt": "2019-08-05T19:03:03.589695+02:00",
-        "owner": "user.SUPERUSER@SUPERUSER",
-        "ownerName": "SUPERUSER",
-        "shared": false,
-        "own": true,
-        "system": false,
-        "query": {"type": "CONCEPT_QUERY",
+      "expected_result": {"type": "CONCEPT_QUERY",
           "root": {"type": "AND",
             "children": [{"type": "OR",
               "children": [{"type": "CONCEPT",
                 "label": "Heilmittelkosten",
                 "ids": ["demo.heilmittelkosten"],
                 "tables": [{"id": "demo.heilmittelkosten.heilmittel"}],
-                "excludeFromTimeAggregation": false}]}]}},
-        "id": "demo.c74576bd-5f86-496a-aefc-812c46d75a9e",
-        "status": "DONE",
-        "numberOfResults": 9430,
-        "requiredTime": 841
+                "excludeFromTimeAggregation": false}]}]}
       }
     }
   ],

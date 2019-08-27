@@ -66,7 +66,7 @@ class ConqueryConnection(object):
 
     async def get_stored_query(self, dataset, query_id):
         result = await get(self._session, f"{self._url}/api/datasets/{dataset}/stored-queries/{query_id}")
-        return result
+        return result.get('query')
 
     async def get_query(self, dataset, query_id):
         result = await get(self._session, f"{self._url}/api/datasets/{dataset}/queries/{query_id}")

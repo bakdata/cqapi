@@ -10,10 +10,16 @@ concepts = {
         "selects": []
     },
     "single_selects": {
-        "selects": ["select.id"]
+        "selects": [{
+            "id": "select.id"
+         }]
     },
     "multiple_selects": {
-        "selects": ["select.id.1", "selects.id.2", "select.id.3"]
+        "selects": [
+            {"id": "select.id.1"},
+            {"id": "selects.id.2"},
+            {"id": "select.id.3"}
+        ]
     },
     "no_selects_chatter": {
         "other": "attributes",
@@ -27,12 +33,18 @@ concepts = {
     "single_selects_chatter": {
         "other": "attributes",
         "number": 1,
-        "selects": ["select.id"]
+        "selects": [{
+            "id": "select.id"
+        }]
     },
     "multiple_selects_chatter": {
         "other": "attributes",
         "number": 1,
-        "selects": ["select.id.1", "selects.id.2", "select.id.3"]
+        "selects": [
+            {"id": "select.id.1"},
+            {"id": "selects.id.2"},
+            {"id": "select.id.3"}
+        ]
     },
 }
 
