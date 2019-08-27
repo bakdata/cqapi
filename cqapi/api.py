@@ -1,7 +1,7 @@
 from aiohttp import ClientSession
 from aiohttp import ClientConnectorError
+from cqapi import util
 import csv
-
 
 class CqApiError(BaseException):
     pass
@@ -93,4 +93,13 @@ class ConqueryConnection(object):
 
     async def _download_query_results(self, url):
         return await get_text(self._session, url)
+
+    async def create_concept_query_with_selects(self, dataset: str, concept_id: str, selects: list=None):
+        concepts = await self.get_concepts(dataset)
+
+        if selects is None:
+            selects = util.selects_per_concept(concepts).get(concept_id)
+
+        concept_query = util.concept_query_from_concept(concept_id, concepts.get(concept_id))
+        return util.add_selects_to_concept_query(concept_query, concept_id, selects)
 
