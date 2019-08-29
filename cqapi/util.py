@@ -119,11 +119,11 @@ def add_date_restriction_to_concept_query(query, target_concept_id: str, date_st
     query_object = deepcopy(query)
 
     if type(date_start) is not date:
-        start = date.fromisoformat(date_start)
+        start = _parse_iso_date(date_start)
     else:
         start = date_start
     if type(date_end) is not date:
-        end = date.fromisoformat(date_end)
+        end = _parse_iso_date(date_end)
     else:
         end = date_end
     if (end - start).days < 0:
@@ -222,3 +222,8 @@ def add_subquery_to_concept_query(query, subquery):
             ]
         }
         return query
+
+
+def _parse_iso_date(datestring: str):
+    y, m, d = map(lambda x: int(x), datestring.split('-'))
+    return date(y, m, d)
