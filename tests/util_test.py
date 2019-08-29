@@ -1,4 +1,4 @@
-from cqapi.util import selects_per_concept, add_selects_to_concept_query, add_date_restriction_to_concept_query
+from cqapi.util import selects_per_concept, add_selects_to_concept_query, add_date_restriction_to_concept_query, _parse_iso_date
 import copy
 from datetime import date
 import pytest
@@ -240,7 +240,7 @@ def test_add_selects_to_concept_with_date_restriction():
 
 def test_add_date_restriction_to_concept_bad_dateranges():
     with pytest.raises(ValueError) as e:
-        add_date_restriction_to_concept_query(query_with_concept, target_concept_id, "199-02-01", date.today())
+        add_date_restriction_to_concept_query(query_with_concept, target_concept_id, "1-02-1902", date.today())
     with pytest.raises(ValueError) as e:
         add_date_restriction_to_concept_query(query_with_concept, target_concept_id, date.today(), "199-02-01")
     with pytest.raises(ValueError) as e:
@@ -251,3 +251,56 @@ def test_add_date_restriction_to_concept_bad_dateranges():
 def test_add_date_restriction_to_concept():
     enriched_query = add_date_restriction_to_concept_query(query_with_concept, target_concept_id, "1992-02-18", "2019-08-23")
     assert query_with_daterange == enriched_query
+
+
+valid_date_strings = [
+    {
+        'string': '2020-04-12',
+        'expected': date(2020, 4, 12)
+    },
+    {
+        'string': '2020-03-31',
+        'expected': date(2020, 3, 31)
+    },
+    {
+        'string': '1922-12-24',
+        'expected': date(1922, 12, 24)
+    }
+]
+
+@pytest.mark.parametrize("param", valid_date_strings)
+def test_parse_iso_date(param):
+    input = param.get('string')
+    expected = param.get('expected')
+    assert expected == _parse_iso_date(input)
+
+
+invalid_date_strings = [
+    {
+        'string': '2020-13-31',
+        'expected': ValueError
+    },
+    {
+        'string': '1922-12-32',
+        'expected': ValueError
+    },
+    {
+        'string': '2012-02-30',
+        'expected': ValueError
+    },
+    {
+        'string': '1900-04-31',
+        'expected': ValueError
+    },
+    {
+        'string': '1900-04-31-12',
+        'expected': ValueError
+    }
+]
+
+@pytest.mark.parametrize("param", invalid_date_strings)
+def test_parse_iso_date_failures(param):
+    input = param.get('string')
+    expected_error = param.get('expected')
+    with pytest.raises(expected_error):
+        _parse_iso_date(input)
