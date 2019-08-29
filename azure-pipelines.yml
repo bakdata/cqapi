@@ -20,7 +20,7 @@ jobs:
   steps:
   - task: UsePythonVersion@0
     inputs:
-      versionSpec: '${python.version)'
+      versionSpec: '${python.version}'
     displayName: 'Set python version according to build matrix'
   - script: python -m pip install --upgrade pip
     displayName: 'Update pip'
