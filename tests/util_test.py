@@ -240,7 +240,7 @@ def test_add_selects_to_concept_with_date_restriction():
 
 def test_add_date_restriction_to_concept_bad_dateranges():
     with pytest.raises(ValueError) as e:
-        add_date_restriction_to_concept_query(query_with_concept, target_concept_id, "199-02-01", date.today())
+        add_date_restriction_to_concept_query(query_with_concept, target_concept_id, "1-02-1902", date.today())
     with pytest.raises(ValueError) as e:
         add_date_restriction_to_concept_query(query_with_concept, target_concept_id, date.today(), "199-02-01")
     with pytest.raises(ValueError) as e:
