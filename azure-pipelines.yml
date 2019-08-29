@@ -11,12 +11,17 @@ jobs:
 - job: 'Test'
   pool:
     vmImage: 'ubuntu-latest'
-
+  strategy:
+    matrix:
+      Python36:
+        python.version: '3.6'
+      Python37:
+        python.version: '3.7'
   steps:
   - task: UsePythonVersion@0
     inputs:
-      versionSpec: '3.7'
-    displayName: 'Set python version to 3.7'
+      versionSpec: '${python.version)'
+    displayName: 'Set python version according to build matrix'
   - script: python -m pip install --upgrade pip
     displayName: 'Update pip'
   - script: pip install -r requirements.txt
