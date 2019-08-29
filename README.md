@@ -4,6 +4,8 @@
 
 ## Installation
 
+Some functionality of `cqapi` requires Python version `>= 3.7`.
+
 To install the latest version of `cqapi` on the `master` branch run:
 ```
 pip install git+ssh://git@github.com/bakdata/cqapi@master
@@ -11,8 +13,6 @@ pip install git+ssh://git@github.com/bakdata/cqapi@master
 
 Note that you can specify any branch or tag using the `@branch/tag-name` syntax, but the `master` branch is where we
 attempt to keep a working version of this library.
-
-As long as this repository is kept private you will need to use a valid ssh key to install the package from here.
 
 ## Usage
 
