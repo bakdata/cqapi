@@ -253,8 +253,6 @@ def create_relative_query(index_query, features, outcomes, time_before, time_aft
         'timeUnit': time_unit
     }
 
-    pass
-
                         
 def _parse_iso_date(datestring: str):
     y, m, d = map(lambda x: int(x), datestring.split('-'))
