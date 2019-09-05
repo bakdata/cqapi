@@ -222,3 +222,35 @@ def add_subquery_to_concept_query(query, subquery):
             ]
         }
         return query
+
+
+def create_relative_query(index_query, features, outcomes, time_before, time_after,
+                          index_selector='FIRST', index_placement='NEUTRAL', time_unit='QUARTERS'):
+    valid_time_units = ['QUARTERS', 'DAYS']
+    valid_index_selectors = ['FIRST', 'LAST', 'RANDOM']
+    valid_index_placements = ['BEFORE', 'NEUTRAL', 'AFTER']
+
+    if time_unit not in valid_time_units:
+        raise ValueError(f"Invalid time_unit. Must be one of {valid_time_units}")
+    if time_before < 0:
+        raise ValueError("Invalid time_before. Must be positive")
+    if time_after < 0:
+        raise ValueError("Invalid time_after. Must be positive")
+    if index_selector not in valid_index_selectors:
+        raise ValueError(f"Invalid index_selector. Must be one of {valid_index_selectors}")
+    if index_placement not in valid_index_placements:
+        raise ValueError(f"Invalid index_placement. Must be one of {valid_index_placements}")
+
+    return {
+        'type': 'RELATIVE_FORM_QUERY',
+        'query': index_query,
+        'features': features,
+        'outcomes': outcomes,
+        'indexSelector': index_selector,
+        'indexPlacement': index_placement,
+        'timeCountBefore': time_before,
+        'timeCountAfter': time_after,
+        'timeUnit': time_unit
+    }
+
+    pass
