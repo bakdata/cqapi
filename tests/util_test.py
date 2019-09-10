@@ -1,4 +1,5 @@
-from cqapi.util import selects_per_concept, add_selects_to_concept_query, add_date_restriction_to_concept_query, _parse_iso_date
+from cqapi.util import *
+from cqapi.util import _parse_iso_date
 import copy
 from datetime import date
 import pytest
@@ -251,6 +252,76 @@ def test_add_date_restriction_to_concept_bad_dateranges():
 def test_add_date_restriction_to_concept():
     enriched_query = add_date_restriction_to_concept_query(query_with_concept, target_concept_id, "1992-02-18", "2019-08-23")
     assert query_with_daterange == enriched_query
+
+
+def test_create_relative_query():
+    # bad time unit
+    with pytest.raises(ValueError) as e:
+        create_relative_query({}, {}, {}, 1, 1, time_unit='NOT_A_TIME_UNIT')
+    assert "Invalid time_unit. Must be one of ['QUARTERS', 'DAYS']" == str(e.value)
+
+    # bad time values
+    with pytest.raises(ValueError) as e:
+        create_relative_query({}, {}, {}, 1, -1)
+    assert "Invalid time_after. Must be positive" == str(e.value)
+    with pytest.raises(ValueError) as e:
+        create_relative_query({}, {}, {}, -1, 1)
+    assert "Invalid time_before. Must be positive" == str(e.value)
+
+    # bad index selector
+    with pytest.raises(ValueError) as e:
+        create_relative_query({}, {}, {}, 1, 1, index_selector='NOT_VALID')
+    assert "Invalid index_selector. Must be one of ['FIRST', 'LAST', 'RANDOM']" == str(e.value)
+
+    # bad index placement
+    with pytest.raises(ValueError) as e:
+        create_relative_query({}, {}, {}, 1, 1, index_placement='NOT_VALID')
+    assert "Invalid index_placement. Must be one of ['BEFORE', 'NEUTRAL', 'AFTER']" == str(e.value)
+
+    # valid input
+    index_query = {
+        'lets_pretend': 'this was a valid query'
+    }
+    before = [
+        {
+            'before': 'feature'
+        },
+        {
+            'another': 'concept'
+        }
+    ]
+    after = {
+        'after': 'outcome concept'
+    }
+
+    query = create_relative_query(index_query, before, after, 2, 1, index_selector='LAST', index_placement='BEFORE',
+                                  time_unit='DAYS')
+    expected = {
+        'type': 'RELATIVE_FORM_QUERY',
+        'query': index_query,
+        'features': before,
+        'outcomes': after,
+        'indexSelector': 'LAST',  # FIRST, LAST, RANDOM
+        'indexPlacement': 'BEFORE',  # BEFORE, AFTER, NEUTRAL
+        'timeCountBefore': 2,
+        'timeCountAfter': 1,
+        'timeUnit': 'DAYS'
+    }
+    assert expected == query
+
+    query_with_defaults = create_relative_query(index_query, before, after, 4, 4)
+    expected = {
+        'type': 'RELATIVE_FORM_QUERY',
+        'query': index_query,
+        'features': before,
+        'outcomes': after,
+        'indexSelector': 'FIRST', # FIRST, LAST, RANDOM
+        'indexPlacement': 'NEUTRAL', # BEFORE, AFTER, NEUTRAL
+        'timeCountBefore': 4,
+        'timeCountAfter': 4,
+        'timeUnit': 'QUARTERS'
+    }
+    assert expected == query_with_defaults
 
 
 valid_date_strings = [

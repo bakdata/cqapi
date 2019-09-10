@@ -74,7 +74,10 @@ class ConqueryConnection(object):
 
     async def execute_query(self, dataset, query):
         result = await post(self._session, f"{self._url}/api/datasets/{dataset}/queries", query)
-        return result["id"]
+        try:
+            return result['id']
+        except KeyError:
+            raise ValueError("Error encountered when executing query", result.get('message'), result.get('details'))
 
     async def get_query_result(self, dataset, query_id):
         """ Returns results for given query.
