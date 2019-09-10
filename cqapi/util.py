@@ -71,8 +71,8 @@ def selects_per_concept(concepts: dict):
     return {concept_id: [select_dict.get('id') for select_dict in concept.get('selects', [])] for (concept_id, concept) in concepts.items()}
 
 
-def add_selects_to_concept_query(query, target_concept_id: str, selects: list, ):
-    """ Add select-ids to CONCEPT nodes in CONCEPT_QUERYs.
+def add_selects_to_concept_query(query, target_concept_id: str, selects: list):
+    """ Add select ids to CONCEPT nodes in queries.
 
     :param query: query to add selects to.
     :param target_concept_id: CONCEPT's id to which the selects should be added.
@@ -86,7 +86,7 @@ def add_selects_to_concept_query(query, target_concept_id: str, selects: list, )
     query_object = deepcopy(query)
 
     query_object_node_type = query_object.get('type')
-    if query_object_node_type == 'CONCEPT_QUERY':
+    if query_object_node_type == 'CONCEPT_QUERY' or query_object_node_type == 'RELATIVE_FORM_QUERY':
         query_object['root'] = add_selects_to_concept_query(query_object.get('root'), target_concept_id, selects)
         return query_object
     elif query_object_node_type == 'AND':
@@ -116,6 +116,16 @@ def add_selects_to_concept_query(query, target_concept_id: str, selects: list, )
 
 
 def add_date_restriction_to_concept_query(query, target_concept_id: str, date_start: date, date_end: date):
+    """ Add (absolute) date restriction to a query.
+
+    Adds the date restriction directly above all occurrences of the target_concept_id in the query object.
+
+    :param query: Query to add date restriction to.
+    :param target_concept_id: Id of concept node in query above which the date restriction node should be added.
+    :param date_start: Start-date of the date restriction.
+    :param date_end: End-date of the date restriction.
+    :return:
+    """
     query_object = deepcopy(query)
 
     if type(date_start) is not date:
@@ -224,8 +234,25 @@ def add_subquery_to_concept_query(query, subquery):
         return query
 
 
-def create_relative_query(index_query, features, outcomes, time_before, time_after,
+def create_relative_query(index_query, before_query, after_query, time_before, time_after,
                           index_selector='FIRST', index_placement='NEUTRAL', time_unit='QUARTERS'):
+    """ Create a RELATIVE_FORM_QUERY for temporally relative data export.
+
+    :param index_query: Concept query describing the event that is to be used as the index date
+    :param before_query: Concept query to select which information will be requested for the time frame before the index
+        date
+    :param after_query: Concept query to select which information will be requested for time frame after the index date
+    :param time_before: Number of time units (see `time_unit`) before the index date to consider using the
+        `before_query`
+    :param time_after: Number of time units (see `time_unit`) after the index date to consider using the `after_query`
+    :param index_selector: One of `'FIRST'` (default), `'LAST'`, and `'RANDOM'`. Selects which index date to use in
+        case `index_query` matches multiple event occurrences
+    :param index_placement: One of `'BEFORE'`, `'NEUTRAL'` (default), and `'AFTER'`. Selects if the index event
+        should be considered for either of the before or after time frames' results
+    :param time_unit: One of `'QUARTERS'` (default) and `'DAYS'`. Time unit of `time_before` and `time_after`
+        respectively
+    :return:
+    """
     valid_time_units = ['QUARTERS', 'DAYS']
     valid_index_selectors = ['FIRST', 'LAST', 'RANDOM']
     valid_index_placements = ['BEFORE', 'NEUTRAL', 'AFTER']
@@ -244,8 +271,8 @@ def create_relative_query(index_query, features, outcomes, time_before, time_aft
     return {
         'type': 'RELATIVE_FORM_QUERY',
         'query': index_query,
-        'features': features,
-        'outcomes': outcomes,
+        'features': before_query,
+        'outcomes': after_query,
         'indexSelector': index_selector,
         'indexPlacement': index_placement,
         'timeCountBefore': time_before,
