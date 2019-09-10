@@ -4,7 +4,7 @@
 
 These functions can be found in the `util` namespace but are also available as top-level imports:
 ```python
-# makes utility functions available on the global namespace:
+# makes utility functions available on the global namespace
 import cqapi
 
 # allows qualified usage of utility functions; e.g. util.selects_per_concept(concepts)
