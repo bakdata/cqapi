@@ -11,21 +11,25 @@ class ConqueryClientConnectionError(CqApiError):
     def __init__(self, msg):
         self.message = msg
 
-
 async def get(session, url):
     async with session.get(url) as response:
         return await response.json()
-
 
 async def get_text(session, url):
     async with session.get(url) as response:
         return await response.text()
 
-
 async def post(session, url, data):
     async with session.post(url, json=data) as response:
         return await response.json()
 
+async def patch(session, url, data):
+    async with session.patch(url, json = data) as response:
+        return await response.json()
+
+async def delete(session, url, ):
+    async with session.delete(url) as response:
+        return await response.text()
 
 class ConqueryConnection(object):
     async def __aenter__(self):
@@ -60,6 +64,10 @@ class ConqueryConnection(object):
         response_list = [dict(attrs, **{"ids": [c_id]}) for c_id, attrs in response_dict.items()]
         return response_list
 
+    async def get_concept_real(self, dataset, concept_id):
+        response_dict = await get(self._session, f"{self._url}/api/datasets/{dataset}/concepts/{concept_id}")
+        return response_dict
+
     async def get_stored_queries(self, dataset):
         response_list = await get(self._session, f"{self._url}/api/datasets/{dataset}/stored-queries")
         return response_list
@@ -68,18 +76,34 @@ class ConqueryConnection(object):
         result = await get(self._session, f"{self._url}/api/datasets/{dataset}/stored-queries/{query_id}")
         return result.get('query')
 
-    async def get_query(self, dataset, query_id):
-        result = await get(self._session, f"{self._url}/api/datasets/{dataset}/queries/{query_id}")
+    async def delete_stored_query(self, dataset, query_id):
+        result = await delete(self._session, f"{self._url}/api/datasets/{dataset}/stored-queries/{query_id}")
         return result
 
-    async def execute_query(self, dataset, query):
+    async def get_query(self, dataset, query_id, is_form_query):
+        if is_form_query:
+            result = await get(self._session, f"{self._url}/api/datasets/{dataset}/form-queries/{query_id}")
+        else:
+            result = await get(self._session, f"{self._url}/api/datasets/{dataset}/queries/{query_id}")
+        return result
+
+    async def execute_query(self, dataset, query, label = None):
         result = await post(self._session, f"{self._url}/api/datasets/{dataset}/queries", query)
+        try:
+            if label is not None:
+                await patch(self._session, f"{self._url}/api/datasets/{dataset}/stored-queries/{result['id']}",data={"label":label})
+            return result['id']
+        except KeyError:
+            raise ValueError("Error encountered when executing query", result.get('message'), result.get('details'))
+
+    async def execute_form_query(self, dataset, form_query):
+        result = await post(self._session, f"{self._url}/api/datasets/{dataset}/form-queries", form_query)
         try:
             return result['id']
         except KeyError:
             raise ValueError("Error encountered when executing query", result.get('message'), result.get('details'))
 
-    async def get_query_result(self, dataset, query_id):
+    async def get_query_result(self, dataset, query_id, is_form_query = False):
         """ Returns results for given query.
         Blocks until the query is DONE.
 
@@ -87,9 +111,9 @@ class ConqueryConnection(object):
         :param query_id:
         :return: str containing the returned csv's
         """
-        response = await self.get_query(dataset, query_id)
+        response = await self.get_query(dataset, query_id, is_form_query)
         while not response['status'] == 'DONE':
-            response = await self.get_query(dataset, query_id)
+            response = await self.get_query(dataset, query_id, is_form_query)
 
         result_string = await self._download_query_results(response["resultUrl"])
         return list(csv.reader(result_string.splitlines(), delimiter=';'))
