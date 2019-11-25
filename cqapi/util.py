@@ -1,4 +1,5 @@
 from datetime import date
+from datetime import datetime
 from copy import deepcopy
 
 
@@ -233,6 +234,35 @@ def add_subquery_to_concept_query(query, subquery):
         }
         return query
 
+def create_absolute_form_query(query_id, feature_queries: list, dateRange: list):
+
+    """ Create an ABSOLUTE_FORM_QUERY
+    :param query_id: ID of the query that will be used to get the patient group
+    :param feature_queries: list of concept queries to add columns
+    :param dateRange: date range with list containing first and last date, dates have to be in format %Y-%m-%d 
+    :return:
+    """
+
+    if datetime.strptime(dateRange[0],'%Y-%m-%d') > datetime.strptime(dateRange[1],'%Y-%m-%d'):
+        raise ValueError(f"Invalid dateRange. {dateRange[0]} is after {dateRange[1]}")
+    for feature_query in feature_queries:
+        if 'root' not in feature_query.keys():
+            raise ValueError(f"Invalid feature query. Query {feature_query} has no key root")
+
+    features = [ {'type' : 'OR', 'children' : [ feature_query['root'] ] } for feature_query in feature_queries ]
+
+    return {
+        'type' : 'EXPORT_FORM',
+        'queryGroup' : query_id,
+        'timeMode' : {
+            "value" : 'ABSOLUTE',
+            'dateRange' : {
+                'min' : dateRange[0],
+                'max' : dateRange[1]
+            },
+            'features' : features
+        }
+    }
 
 def create_relative_query(index_query, before_query, after_query, time_before, time_after,
                           index_selector='FIRST', index_placement='NEUTRAL', time_unit='QUARTERS'):
@@ -280,7 +310,6 @@ def create_relative_query(index_query, before_query, after_query, time_before, t
         'timeUnit': time_unit
     }
 
-                        
 def _parse_iso_date(datestring: str):
     y, m, d = map(lambda x: int(x), datestring.split('-'))
     return date(y, m, d)
