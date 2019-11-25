@@ -239,7 +239,7 @@ def create_absolute_form_query(query_id, feature_queries: list, dateRange: list)
     """ Create an ABSOLUTE_FORM_QUERY
     :param query_id: ID of the query that will be used to get the patient group
     :param feature_queries: list of concept queries to add columns
-    :param dateRange: date range with list containing first and last date 
+    :param dateRange: date range with list containing first and last date, dates have to be in format %Y-%m-%d 
     :return:
     """
 

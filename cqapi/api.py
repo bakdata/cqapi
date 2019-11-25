@@ -64,10 +64,6 @@ class ConqueryConnection(object):
         response_list = [dict(attrs, **{"ids": [c_id]}) for c_id, attrs in response_dict.items()]
         return response_list
 
-    async def get_concept_real(self, dataset, concept_id):
-        response_dict = await get(self._session, f"{self._url}/api/datasets/{dataset}/concepts/{concept_id}")
-        return response_dict
-
     async def get_stored_queries(self, dataset):
         response_list = await get(self._session, f"{self._url}/api/datasets/{dataset}/stored-queries")
         return response_list
