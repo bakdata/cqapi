@@ -19,7 +19,7 @@ setup(
     long_description=readme,
     packages=['cqapi'],
     install_requires=[
-        'aiohttp==3.5.4'
+        'aiohttp==3.7.4'
     ],
 )
 
