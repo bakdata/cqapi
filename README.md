@@ -1,4 +1,4 @@
-# cqapi
+# cqapi -- ARCHIVED
 
 [![Build Status](https://dev.azure.com/bakdata/public/_apis/build/status/bakdata.cqapi?branchName=master)](https://dev.azure.com/bakdata/public/_build/latest?definitionId=11&branchName=master)
 
